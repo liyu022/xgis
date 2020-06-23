@@ -1,0 +1,143 @@
+<template>
+  <div>
+    <!-- 工具条组件 -->
+    <tool-bar
+      @measurement="measurement"
+      @baseMapChange="baseMapChange"
+      @draw="draw"
+      @showLegend="showLegend"
+      @showLayerList="showLayerList"
+      @spatialQuery="spatialQuery"
+      @attributeQuery="attributeQuery"
+    ></tool-bar>
+
+    <!-- 测量组件 -->
+    <measurement
+      :show="isShowMeasurement"
+      @closMmeasurement="measurement"></measurement>
+
+    <layer-nav-menu></layer-nav-menu>
+
+    <!-- 属性查询框 -->
+    <Query
+      @attributeQueryOnSearch="attributeQueryOnSearch"
+      :attributeQueryData="attributeQueryData"></Query>
+    <!-- 缓冲区分析内容显示 -->
+    <content-buffer></content-buffer>
+  </div>
+</template>
+
+<script>
+import ToolBar from "./components/ToolBar.vue";
+import Measurement from "./components/Measurement.vue";
+import LayerNavMenu from "./components/LayerNavMenu.vue";
+import Query from "./components/Query.vue";
+import ContentBuffer from "./components/ContentBuffer.vue";
+
+// 引入 ArcGIS 模块，并进行实例化
+import ArcGIS from "./index.js";
+let Map = new ArcGIS();
+export default {
+  name: "layer",
+  mounted() {
+    Map.init("map"); // 初始化地图模块
+  },
+  methods: {
+    // 测量
+    measurement(type) {
+      switch (type) {
+        case 0:
+          this.isShowMeasurement = false;
+          Map.MeasurementClose();
+          break;
+        case 1:
+          this.isShowMeasurement = true;
+      }
+    },
+    /* 地图切换 */
+    baseMapChange(type) {
+      Map.baseMapChange(type);
+    },
+    // 标绘
+    draw(type) {
+      Map.drawActive(type);
+    },
+    // 显示图例
+    showLegend() {
+      console.log("开启图例");
+    },
+    // 显示图层
+    showLayerList() {
+      console.log("开启图层");
+    },
+    spatialQuery(type) {
+      console.log(type);
+    },
+    attributeQuery() {
+      console.log("开启属性查询");
+    },
+    attributeQueryOnSearch(searchText) {
+      console.log("查询内容::::", searchText);
+      // 查询并接回调函数 FindTask
+      // Map.executeFindTask(
+      //   {
+      //     url: url().huinong.hezuoshe,
+      //     layerIds: [0, 1, 2],
+      //     searchText: searchText,
+      //   },
+      //   (res) => {
+      //     console.log(res);
+      //     this.attributeQueryData = res;
+      //   }
+      // );
+
+      // Map.executeQueryTaskByAttribute(
+      //   {
+      //     url: url().huinong.hezuoshe,
+      //     layerId: "0",
+      //     searchText: searchText,
+      //   },
+      //   (res) => {
+      //     console.log(res);
+      //     this.attributeQueryData = res;
+      //   }
+      // );
+    },
+  },
+  data() {
+    return {
+      isShowMeasurement: false, // 测量窗口
+      attributeQueryData: null, // 属性查询
+    };
+  },
+  components: {
+    ToolBar,
+    Measurement,
+    LayerNavMenu,
+    Query,
+    ContentBuffer,
+  },
+};
+</script>
+
+<style lang="less">
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.main {
+  position: absolute;
+  top: 70px;
+  bottom: 0;
+  width: 100%;
+
+  #map {
+    width: 100%;
+    height: 100%;
+  }
+}
+</style>
